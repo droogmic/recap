@@ -78,7 +78,6 @@
 //! ```
 pub use regex::Regex;
 use serde::de::DeserializeOwned;
-use std::convert::identity;
 
 // used in derive crate output
 // to derive a static for compiled
@@ -120,7 +119,7 @@ where
                         .map(|val| (name.to_string(), val.as_str().to_string()))
                 })
             })
-            .filter_map(identity),
+            .flatten(),
     )
 }
 

@@ -4,7 +4,6 @@ use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
 use regex::Regex;
-use std::convert::identity;
 use syn::{
     parse_macro_input, Data::Struct, DataStruct, DeriveInput, Fields, Ident, Lit, Meta, NestedMeta,
 };
@@ -35,7 +34,7 @@ pub fn derive_recap(item: TokenStream) -> TokenStream {
                         .expect("Failed to compile regex");
                 }
 
-                Ok(recap::from_captures(&RE, s)?)
+                recap::from_captures(&RE, s)
             }
         }
     };
@@ -74,13 +73,13 @@ fn validate(
     item: &DeriveInput,
     regex: &str,
 ) {
-    let regex = Regex::new(&regex).unwrap_or_else(|err| {
+    let regex = Regex::new(regex).unwrap_or_else(|err| {
         panic!(
             "Invalid regular expression provided for `{}`\n{}",
             &item.ident, err
         )
     });
-    let caps = regex.capture_names().filter_map(identity).count();
+    let caps = regex.capture_names().flatten().count();
     let fields = match &item.data {
         Struct(DataStruct {
             fields: Fields::Named(fs),
